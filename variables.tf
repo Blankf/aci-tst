@@ -68,7 +68,6 @@ This object describes the configuration for an Azure Storage Account.
   Example Inputs:
 
 ```hcl
-#Standard Regional IPV4 Public IP address configuration
 module "azure-devops" "this" {
   name                              = "storageaccountname"
   ip_rules                          = [ "1.2.3.4" ]

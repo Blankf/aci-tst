@@ -23,13 +23,13 @@ variable "acr" {
       system_assigned            = optional(bool, false)
       user_assigned_resource_ids = optional(set(string), [])
     }), {})
-    network_rule_set  = optional(object({
-      default_action    = optional(string, "Deny")
-      ip_rule   = optional(list(object({
-      # since the `action` property only permits `Allow`, this is hard-coded.
-      action   = optional(string, "Allow")
-      ip_range = string
-    })), [])
+    network_rule_set = optional(object({
+      default_action = optional(string, "Deny")
+      ip_rule = optional(list(object({
+        # since the `action` property only permits `Allow`, this is hard-coded.
+        action   = optional(string, "Allow")
+        ip_range = string
+      })), [])
     }), null)
     tags                    = optional(map(string))
     zone_redundancy_enabled = optional(bool, false)

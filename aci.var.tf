@@ -73,7 +73,19 @@ variable "aci" {
     commands                     = optional(list(string), null)
   }))
   default     = {}
-  description = "A map of containers to run in the container group."
+  description = <<DESCRIPTION
+
+- `image` = (Required) - The image to use for the container.
+- `cpu` = (Optional) - The CPU to allocate to the container. Defaults to 1.
+- `memory` = (Optional) - The memory to allocate to the container. Defaults to 1.
+- `ports` = (Required) - A list of ports to expose on the container.
+- `volumes` = (Optional) - A map of volumes to mount to the container.
+- `environment_variables` = (Optional) - A map of environment variables to set in the container.
+- `secure_environment_variables` = (Optional) - A map of secure environment variables to set in the container.
+- `commands` = (Optional) - A list of commands to run in the container.
+
+DESCRIPTION
+
 }
 
 variable "diagnostics_log_analytics" {
@@ -103,7 +115,12 @@ variable "exposed_ports" {
     protocol = string
   }))
   default     = []
-  description = "A list of ports to expose on the container group."
+  description = <<DESCRIPTION
+A list of ports to expose on the container group.
+
+- `port` = (Required) - The port to expose.
+- `protocol` = (Required) - The protocol to use for the port. Valid options are TCP and UDP.
+DESCRIPTION
 }
 
 variable "image_registry_credential" {
@@ -137,7 +154,18 @@ variable "liveness_probe" {
     })
   })
   default     = null
-  description = "The liveness probe configuration for the container group."
+  description = <<DESCRIPTION
+
+- `exec` = (Optional) - The exec probe configuration.
+- `period_seconds` = (Required) - The period in seconds between probe checks.
+- `failure_threshold` = (Required) - The number of failures before the probe is considered failed.
+- `success_threshold` = (Required) - The number of successes before the probe is considered successful.
+- `timeout_seconds` = (Required) - The timeout in seconds for the probe.
+- `initial_delay_seconds` = (Required) - The initial delay in seconds before the first probe check.
+- `http_get` = (Optional) - The HTTP GET probe configuration.
+- `tcp_socket` = (Optional) - The TCP socket probe configuration.
+
+DESCRIPTION
 }
 
 variable "readiness_probe" {
@@ -160,5 +188,16 @@ variable "readiness_probe" {
     })
   })
   default     = null
-  description = "The readiness probe configuration for the container group."
+  description = <<DESCRIPTION
+
+- `exec` = (Optional) - The exec probe configuration.
+- `period_seconds` = (Required) - The period in seconds between probe checks.
+- `failure_threshold` = (Required) - The number of failures before the probe is considered failed.
+- `success_threshold` = (Required) - The number of successes before the probe is considered successful.
+- `timeout_seconds` = (Required) - The timeout in seconds for the probe.
+- `initial_delay_seconds` = (Required) - The initial delay in seconds before the first probe check.
+- `http_get` = (Optional) - The HTTP GET probe configuration.
+- `tcp_socket` = (Optional) - The TCP socket probe configuration.
+
+DESCRIPTION
 }
