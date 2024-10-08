@@ -69,6 +69,9 @@ resource "azurerm_container_registry" "this" {
     })
   )
 
+
+  # this is to make sure that when you have standard, but selected premium features, it will tell you that you have to use premium sku or nullify the premium features
+
   lifecycle {
     precondition {
       condition     = var.acr.zone_redundancy_enabled != null && var.acr.sku == "Premium" || var.acr.network_rule_set == null

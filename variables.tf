@@ -8,7 +8,6 @@ variable "resource_group" {
     name     = null
     location = null
   }
-  nullable = false
 }
 
 variable "storage_account" {
@@ -95,19 +94,3 @@ variable "zones" {
   description = "A list of availability zones in which the resource should be created."
 }
 
-variable "network_security_group_name" {
-  type        = string
-  description = "The ID of the network security group to associate the rules with."
-}
-
-variable "network_security_group_rsg" {
-  type        = string
-  description = "The name of the resource group where the network security group is located."
-}
-
-# found here: https://learn.microsoft.com/en-us/azure/devops/organizations/security/allow-list-ip-url?view=azure-devops&tabs=IP-V4#outbound-connections
-variable "destination_address_prefixes" {
-  type        = list(string)
-  description = "The destination address prefix for the rule."
-  default     = ["13.107.6.0/24", "13.107.9.0/24", "13.107.42.0/24", "13.107.43.0/24"]
-}

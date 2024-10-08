@@ -70,7 +70,7 @@ resource "azurerm_storage_account_network_rules" "this" {
 }
 
 resource "azurerm_storage_container" "this" {
-  name                  = "ccoetfstate"
+  name                  = "tfstate"
   storage_account_name  = azurerm_storage_account.this.name
   container_access_type = "private"
 }
@@ -109,18 +109,4 @@ resource "azurerm_role_assignment" "cmk" {
   principal_id         = azurerm_storage_account.this.identity[0].principal_id
 
   depends_on = [azurerm_storage_account.this]
-}
-
-resource "azurerm_network_security_rule" "allow_https_out_to_azdevops" {
-  name                         = "allow_https_out_to_azdevops"
-  priority                     = 105
-  direction                    = "Outbound"
-  access                       = "Allow"
-  protocol                     = "Tcp"
-  source_port_range            = "*"
-  destination_port_range       = "443"
-  source_address_prefix        = "VirtualNetwork"
-  destination_address_prefixes = var.destination_address_prefixes
-  resource_group_name          = var.network_security_group_rsg
-  network_security_group_name  = var.network_security_group_name
 }
