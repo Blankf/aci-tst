@@ -1,7 +1,7 @@
 resource "azurerm_user_assigned_identity" "this" {
   name                = "${var.container_group.name}-mid"
-  location            = var.container_group.location == null ? var.resource_group.location : var.container_group.location
-  resource_group_name = var.container_group.resource_group_name == null ? var.resource_group.name : var.container_group.resource_group_name
+  location            = var.container_group.location == null ? azurerm_resource_group.this.location : var.container_group.location
+  resource_group_name = var.container_group.resource_group_name == null ? azurerm_resource_group.this.name : var.container_group.resource_group_name
 }
 
 resource "azurerm_role_assignment" "acr" {
@@ -17,8 +17,8 @@ resource "azurerm_role_assignment" "acr" {
 
 resource "azurerm_container_group" "this" {
   name                                = var.container_group.name
-  location                            = var.container_group.location == null ? var.resource_group.location : var.container_group.location
-  resource_group_name                 = var.container_group.resource_group_name == null ? var.resource_group.name : var.container_group.resource_group_name
+  location                            = var.container_group.location == null ? azurerm_resource_group.this.location : var.container_group.location
+  resource_group_name                 = var.container_group.resource_group_name == null ? azurerm_resource_group.this.name : var.container_group.resource_group_name
   os_type                             = var.container_group.os_type
   dns_name_label                      = length(var.container_group.subnet_ids) == 0 ? var.dns_name_label : null
   dns_name_label_reuse_policy         = var.container_group.dns_name_label_reuse_policy

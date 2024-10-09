@@ -1,7 +1,7 @@
 resource "azurerm_container_registry" "this" {
   name                     = var.acr.name
-  location                 = var.acr.location == null ? var.resource_group.location : var.acr.location
-  resource_group_name      = var.acr.resource_group_name == null ? var.resource_group.name : var.acr.resource_group_name
+  location                 = var.acr.location == null ? azurerm_resource_group.this.location : var.acr.location
+  resource_group_name      = var.acr.resource_group_name == null ? azurerm_resource_group.this.name : var.acr.resource_group_name
   sku                      = var.acr.sku
   admin_enabled            = var.acr.admin_enabled
   anonymous_pull_enabled   = var.acr.anonymous_pull_enabled
