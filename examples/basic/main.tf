@@ -10,9 +10,6 @@ module "azure_devops_ccoe" {
     location = "eastus"
   }
 
-  network_security_group_rsg  = module.az_names["ntwk"].naming.management_governance.resource_groups
-  network_security_group_name = "${module.az_names["ntwk"].naming.networking.virtual_network}-nsg"
-
   storage_account = {
     name                  = module.az_names["azdo"].naming.storage.storage_account
     cmk_key_vault_id      = module.ccoe_core.key_vault_id
