@@ -11,12 +11,12 @@ module "azure_devops_ccoe" {
   }
 
   acr = {
-    name = module.az_names["azdo"].naming.containers.container_registry
+    name = "test-acr"
   }
 
   container_group = {
-    name       = module.az_names["azdo"].naming.containers.container_instances
-    subnet_ids = [module.ccoe_ntwk.subnet_list["DevopsSubnet"].id]
+    name       = "test-containergroup"
+    subnet_ids = "DevopsSubnet"
   }
 
   aci = {
@@ -39,8 +39,4 @@ module "azure_devops_ccoe" {
   tags = {
     environment = "dev"
   }
-}
-
-output "naming_convention" {
-  value = module.azure_naming
 }
