@@ -10,17 +10,6 @@ module "azure_devops_ccoe" {
     location = "eastus"
   }
 
-  storage_account = {
-    name                  = module.az_names["azdo"].naming.storage.storage_account
-    cmk_key_vault_id      = module.ccoe_core.key_vault_id
-    cmk_key_vault_keyname = module.ccoe_core.key_vault_cmkec_keyname
-    ip_rules              = ["192.168.1.99"]
-
-    contributors = [
-      "00000000-0000-0000-0000-000000000000"
-    ]
-  }
-
   acr = {
     name = module.az_names["azdo"].naming.containers.container_registry
   }
