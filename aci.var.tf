@@ -4,7 +4,7 @@ variable "container_group" {
     location                            = optional(string)
     resource_group_name                 = optional(string)
     os_type                             = optional(string, "Linux")
-    subnet_ids                          = list(string)
+    subnet_ids                          = optiona(list(string))
     restart_policy                      = optional(string, "OnFailure")
     priority                            = optional(string, "Regular")
     key_vault_key_id                    = optional(string)
@@ -20,7 +20,7 @@ variable "container_group" {
       user_assigned_resource_ids = optional(set(string), [])
     }), {})
   })
-
+  default = {}
   description = <<ACI_DETAILS
   This object describes the configuration for an Azure Container Instance.
 
