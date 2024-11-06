@@ -5,7 +5,7 @@ resource "azurerm_user_assigned_identity" "this" {
   resource_group_name = var.container_group.resource_group_name == null ? azurerm_resource_group.this.name : var.container_group.resource_group_name
 }
 
-resource "azurerm_role_assignment" "this" {
+resource "azurerm_role_assignment" "aci" {
   for_each = var.container_group.role_assignments != null ? var.container_group.role_assignments : {}
 
   scope                = each.value.scope

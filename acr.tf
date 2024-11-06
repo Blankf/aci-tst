@@ -103,7 +103,7 @@ resource "azurerm_container_registry" "this" {
   }
 }
 
-resource "azurerm_role_assignment" "this" {
+resource "azurerm_role_assignment" "acr" {
   for_each = var.acr.role_assignments != null ? var.acr.role_assignments : {}
 
   scope                = azurerm_container_registry.this.id
