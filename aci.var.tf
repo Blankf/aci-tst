@@ -1,6 +1,6 @@
 variable "container_group" {
   type = object({
-    name                                = string
+    name                                = optional(string)
     location                            = optional(string)
     resource_group_name                 = optional(string)
     os_type                             = optional(string, "Linux")
