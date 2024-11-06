@@ -4,7 +4,7 @@ variable "container_group" {
     location                            = optional(string)
     resource_group_name                 = optional(string)
     os_type                             = optional(string, "Linux")
-    subnet_ids                          = optiona(list(string))
+    subnet_ids                          = optional(list(string))
     restart_policy                      = optional(string, "OnFailure")
     priority                            = optional(string, "Regular")
     key_vault_key_id                    = optional(string)
