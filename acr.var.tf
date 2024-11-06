@@ -33,6 +33,10 @@ variable "acr" {
     }), null)
     tags                    = optional(map(string))
     zone_redundancy_enabled = optional(bool, false)
+    role_assignments    = optional(map(object({
+      principal_id = string
+      role         = string
+    })))
   })
   default     = {}
   nullable    = false

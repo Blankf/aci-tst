@@ -1,12 +1,11 @@
 resource "azurerm_container_registry" "this" {
-  name                     = var.acr.name
-  location                 = var.acr.location == null ? azurerm_resource_group.this.location : var.acr.location
-  resource_group_name      = var.acr.resource_group_name == null ? azurerm_resource_group.this.name : var.acr.resource_group_name
-  sku                      = var.acr.sku
-  admin_enabled            = var.acr.admin_enabled
-  anonymous_pull_enabled   = var.acr.anonymous_pull_enabled
-  retention_policy_in_days = var.acr.retention_policy_in_days
-  #data_endpoint_enabled         = var.acr.data_endpoint_enabled
+  name                          = var.acr.name
+  location                      = var.acr.location == null ? azurerm_resource_group.this.location : var.acr.location
+  resource_group_name           = var.acr.resource_group_name == null ? azurerm_resource_group.this.name : var.acr.resource_group_name
+  sku                           = var.acr.sku
+  admin_enabled                 = var.acr.admin_enabled
+  anonymous_pull_enabled        = var.acr.anonymous_pull_enabled
+  retention_policy_in_days      = var.acr.retention_policy_in_days
   export_policy_enabled         = var.acr.export_policy_enabled
   network_rule_bypass_option    = var.acr.network_bypass
   public_network_access_enabled = var.acr.public_network_access_enabled
@@ -104,3 +103,21 @@ resource "azurerm_container_registry" "this" {
   }
 }
 
+resource "azurerm_role_assignment" "this" {
+  for_each = var.acr.role_assignments != null ? var.acr.role_assignments : {}
+
+  scope                = azurerm_container_registry.this.id
+  role_definition_name = each.value.role_definition_name
+  principal_id         = each.value.id
+
+  lifecycle {
+    precondition {
+      condition     = each.value.role_definition_name == "acrpull" || each.value.role_definition_name == "acrpush"
+      error_message = "The role definition must be either 'acrpull' or 'acrpush'."
+    }
+    precondition {
+      condition     = can(regex("^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12})$", each.value.id))
+      error_message = "The principal ID must be a valid object ID or principal ID."
+    }
+  }
+}

@@ -1,34 +1,49 @@
 resource "azurerm_user_assigned_identity" "this" {
+  count               = var.container_group != null ? 1 : 0
   name                = "${var.container_group.name}-mid"
   location            = var.container_group.location == null ? azurerm_resource_group.this.location : var.container_group.location
   resource_group_name = var.container_group.resource_group_name == null ? azurerm_resource_group.this.name : var.container_group.resource_group_name
 }
 
-resource "azurerm_role_assignment" "acr" {
-  scope                            = azurerm_container_registry.this.id
-  role_definition_name             = "AcrPull"
-  principal_id                     = azurerm_user_assigned_identity.this.principal_id
-  skip_service_principal_aad_check = false
+resource "azurerm_role_assignment" "this" {
+  for_each = var.container_group.role_assignments != null ? var.container_group.role_assignments : {}
 
-  depends_on = [
-    azurerm_container_registry.this
-  ]
+  scope                = each.value.scope
+  role_definition_name = each.value.role_definition_name
+  principal_id         = each.value.id
+
+  lifecycle {
+    precondition {
+      condition     = provider::azurerm::parse_resource_id(each.value.scope)["resource_provider"] == "Microsoft.ContainerRegistry"
+      error_message = "The scope must be an Azure Container Registry."
+    }
+    precondition {
+      condition     = each.value.role_definition_name == "acrpull" || each.value.role_definition_name == "acrpush"
+      error_message = "The role definition must be either 'acrpull' or 'acrpush'."
+    }
+    precondition {
+      condition     = can(regex("^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12})$", each.value.id))
+      error_message = "The principal ID must be a valid object ID or principal ID."
+    }
+  }
 }
 
 resource "azurerm_container_group" "this" {
-  name                                = var.container_group.name
-  location                            = var.container_group.location == null ? azurerm_resource_group.this.location : var.container_group.location
-  resource_group_name                 = var.container_group.resource_group_name == null ? azurerm_resource_group.this.name : var.container_group.resource_group_name
-  os_type                             = var.container_group.os_type
-  dns_name_label                      = length(var.container_group.subnet_ids) == 0 ? var.dns_name_label : null
-  dns_name_label_reuse_policy         = var.container_group.dns_name_label_reuse_policy
-  ip_address_type                     = length(var.container_group.subnet_ids) == 0 ? "Public" : "Private"
-  key_vault_key_id                    = var.container_group.key_vault_key_id
+  count                              = var.container_group != null ? 1 : 0
+
+  name                               = var.container_group.name
+  location                           = var.container_group.location == null ? azurerm_resource_group.this.location : var.container_group.location
+  resource_group_name                = var.container_group.resource_group_name == null ? azurerm_resource_group.this.name : var.container_group.resource_group_name
+  os_type                            = var.container_group.os_type
+  dns_name_label                     = length(var.container_group.subnet_ids) == 0 ? var.dns_name_label : null
+  dns_name_label_reuse_policy        = var.container_group.dns_name_label_reuse_policy
+  ip_address_type                    = length(var.container_group.subnet_ids) == 0 ? "Public" : "Private"
+  key_vault_key_id                   = var.container_group.key_vault_key_id
   key_vault_user_assigned_identity_id = var.container_group.key_vault_user_assigned_identity_id
-  priority                            = var.container_group.priority
-  restart_policy                      = var.container_group.restart_policy
-  subnet_ids                          = length(var.container_group.subnet_ids) == 0 ? null : var.container_group.subnet_ids
-  zones                               = var.zones
+  priority                           = var.container_group.priority
+  restart_policy                     = var.container_group.restart_policy
+  subnet_ids                         = length(var.container_group.subnet_ids) == 0 ? null : var.container_group.subnet_ids
+  zones                              = var.zones
 
   dynamic "container" {
     for_each = var.aci
@@ -99,7 +114,6 @@ resource "azurerm_container_group" "this" {
           name       = volume.key
           empty_dir  = try(volume.value.empty_dir, false)
           read_only  = try(volume.value.read_only, false)
-          # secret               = try(var.container_volume_secrets[container.key].volume[volume.key], null)
           secret               = try(volume.value.secret, null)
           share_name           = try(volume.value.share_name, null)
           storage_account_key  = try(volume.value.storage_account_key, null)
@@ -148,7 +162,7 @@ resource "azurerm_container_group" "this" {
   identity {
     type = "UserAssigned"
     identity_ids = [
-      azurerm_user_assigned_identity.this.id
+      azurerm_user_assigned_identity.this[0].id
     ]
   }
 
@@ -156,7 +170,7 @@ resource "azurerm_container_group" "this" {
     for_each = var.image_registry_credential
     content {
       server                    = azurerm_container_registry.this.login_server
-      user_assigned_identity_id = azurerm_user_assigned_identity.this.id
+      user_assigned_identity_id = azurerm_user_assigned_identity.this[0].id
     }
   }
 
